@@ -1,0 +1,42 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.36
+    env_file: ./env/mysql.env
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app-1: &app
+    image: aluracursos/codechella:latest
+    env_file: ./env/app.env
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app-2:
+    <<: *app
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    restart: unless-stopped
+    depends_on:
+      - app-1
+      - app-2
+
+  redis:
+    image: redis:7.2.4
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
