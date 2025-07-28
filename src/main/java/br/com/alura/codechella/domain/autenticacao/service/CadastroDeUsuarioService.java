@@ -8,6 +8,7 @@ import br.com.alura.codechella.domain.autenticacao.repository.UsuarioRepository;
 import br.com.alura.codechella.domain.autenticacao.vo.DadosCadastroUsuario;
 import br.com.alura.codechella.domain.autenticacao.vo.DadosUsuario;
 import br.com.alura.codechella.domain.email.EnviadorDeEmail;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,8 @@ public class CadastroDeUsuarioService {
         return perfilAcessoRepository.findByNome(PerfilAcesso.COMPRADOR);
     }
 
-    private void enviarEmail(Usuario usuario, String senha) {
+    @Async
+    public void enviarEmail(Usuario usuario, String senha) {
         var destinatario = usuario.getEmail();
         var assunto = "Boas vindas ao CodeChella!";
         var mensagem = "Seu cadastrado foi realizado! Acesse o site com seu email e esta senha: " +senha;

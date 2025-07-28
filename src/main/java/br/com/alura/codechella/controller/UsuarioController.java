@@ -6,14 +6,12 @@ import br.com.alura.codechella.domain.autenticacao.vo.DadosUsuario;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final CadastroDeUsuarioService cadastroDeUsuarioService;

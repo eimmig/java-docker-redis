@@ -1,5 +1,5 @@
-FROM eclipse-temurin:17-jdk-alpine as builder
-WORKDIR application
+FROM eclipse-temurin:17-jdk-alpine AS builder
+WORKDIR /application
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
@@ -11,9 +11,12 @@ RUN java -Djarmode=layertools -jar application.jar extract
 
 
 FROM eclipse-temurin:17-jre-alpine
-WORKDIR application
-COPY --from=builder application/dependencies/ ./
-COPY --from=builder application/spring-boot-loader/ ./
-COPY --from=builder application/snapshot-dependencies/ ./
-COPY --from=builder application/application/ ./
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+RUN apk add --no-cache curl netcat-openbsd
+WORKDIR /application
+COPY --from=builder /application/dependencies/ ./
+COPY --from=builder /application/spring-boot-loader/ ./
+COPY --from=builder /application/snapshot-dependencies/ ./
+COPY --from=builder /application/application/ ./
+COPY wait-for-services.sh /wait-for-services.sh
+RUN chmod +x /wait-for-services.sh
+ENTRYPOINT ["/wait-for-services.sh"]
